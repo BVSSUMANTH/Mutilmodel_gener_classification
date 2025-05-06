@@ -1,0 +1,144 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Multi-Modal Movie Genre Classification</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet" />
+
+  <style>
+    body {
+      display: flex;
+      min-height: 100vh;
+      background: url('background.jpg') no-repeat center center fixed;
+      background-size: cover;
+    }
+
+    #sidebar {
+      width: 240px;
+      background-color: rgba(33, 37, 41, 0.9);
+      padding: 20px 10px;
+      color: white;
+      height: 100vh;
+      position: fixed;
+      z-index: 1000;
+    }
+
+    #sidebar a {
+      color: white;
+      display: block;
+      margin: 10px 0;
+      text-decoration: none;
+      padding: 8px;
+      border-radius: 4px;
+    }
+
+    #sidebar a:hover {
+      background-color: #495057;
+    }
+
+    #sidebar a.active-link {
+      background-color: #0d6efd;
+      color: white;
+      font-weight: bold;
+    }
+
+    #content {
+      margin-left: 260px;
+      padding: 40px;
+      flex-grow: 1;
+      background-color: transparent;
+      color: #f8f9fa;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+      min-height: 100vh;
+    }
+
+    .card {
+      background-color: transparent;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 10px;
+      color: #f8f9fa;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.7);
+    }
+
+    /* === GLOBAL WHITE THEME FOR DYNAMIC CONTENT === */
+    #content,
+    #content h1,
+    #content h2,
+    #content h3,
+    #content h4,
+    #content p,
+    #content li,
+    #content .card-body,
+    #content .card-title,
+    #content .card-text {
+      color: white !important;
+    }
+
+    #content ul li::marker {
+      color: white;
+    }
+
+    #content .text-primary,
+    #content .text-success {
+      color: white !important;
+    }
+
+    #content .card.border-primary,
+    #content .card.border-success {
+      border-color: white !important;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Sidebar -->
+  <div id="sidebar">
+    <h4 class="text-white">Multi-Modal Movie Genre Classification</h4>
+    <a href="#" onclick="loadPage('intro.html', this)">Introduction</a>
+    <a href="#" onclick="loadPage('dataset.html', this)">Dataset</a>
+    <a href="#" onclick="loadPage('methodology.html', this)">Methodology</a>
+    <a href="#" onclick="loadPage('results.html', this)">Results</a>
+    <a href="#" onclick="loadPage('steps.html', this)">Reproducibility</a>
+    <a href="#" onclick="loadPage('teams.html', this)">Team</a>
+    <a href="#" onclick="loadPage('future_work.html', this)">Future Work</a>
+  </div>
+
+  <!-- Main content area -->
+  <div id="content"></div>
+
+  <!-- Dynamic content loader -->
+  <script>
+    function loadPage(page, linkElement = null) {
+      fetch(page)
+        .then(response => response.text())
+        .then(data => {
+          const parser = new DOMParser();
+          const htmlDoc = parser.parseFromString(data, 'text/html');
+          const mainContent = htmlDoc.querySelector('main') || htmlDoc.body;
+          document.getElementById('content').innerHTML = mainContent.innerHTML;
+
+          const links = document.querySelectorAll('#sidebar a');
+          links.forEach(link => link.classList.remove('active-link'));
+          if (linkElement) linkElement.classList.add('active-link');
+        })
+        .catch(error => {
+          document.getElementById('content').innerHTML = "<p>Error loading page.</p>";
+        });
+    }
+
+    // Load intro.html on first load
+    window.onload = function () {
+      const introLink = document.querySelector('#sidebar a[href="#"]');
+      loadPage('intro.html', introLink);
+    };
+  </script>
+
+  <!-- Bootstrap Bundle JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+</body>
+</html>

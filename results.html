@@ -1,0 +1,62 @@
+<main>
+    <h1>Results & Evaluation</h1>
+    <br>
+    <h3>Text Modelling</h3>
+    <p>For the text modeling component, we trained a multi-label classifier using movie overviews and one-hot encoded genre labels. The model achieved a final <strong>per-sample accuracy of 89.76%</strong>, meaning it predicted the correct set of genres for each movie with high consistency. This strong performance reflects the effectiveness of using plot summaries, which often contain rich contextual cues related to genre. However, when we examine the F1-scores more closely, the results reveal an important limitation: while genres like <strong>Documentary (0.70 F1)</strong>, <strong>Music (0.67)</strong>, and <strong>Drama (0.56)</strong> showed strong performance, several genres such as <strong>TV Movie</strong>, <strong>Western</strong>, and <strong>Mystery</strong> had F1-scores close to zero. This highlights the imbalance in genre representation and the challenge of learning rare or ambiguous genre patterns from text alone. Overall, the text model demonstrated excellent performance on well-represented genres and served as a strong standalone baseline for the fusion model.</p>
+    
+    <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+        <div style="width: 48%;">
+            <img src="text_losses.png" alt="Text Model Losses" style="width: 100%;">
+        </div>
+        <div style="width: 48%;">
+            <img src="text_val_acc.png" alt="Text Model Validation Accuracy" style="width: 100%;">
+        </div>
+    </div>
+    <br>
+    <h3>Image Modelling</h3>
+    <p>The performance of our image-based model, which used ResNet18 with strong data augmentations and a custom classification head, was evaluated on a multi-label classification task. On the test set, it achieved a <strong>Micro F1-score of 0.1826</strong>, indicating modest overall performance across all labels when considering label frequency. The <strong>Macro F1-score was 0.1243</strong>, highlighting challenges in predicting underrepresented genres, as this metric treats all classes equally. Interestingly, the model achieved a <strong>Precision of 0.6510</strong>, showing that when it predicted a genre, it was often correct. However, the <strong>Recall was relatively low at 0.1062</strong>, meaning it missed many true genre labels. This suggests that the model was conservative in assigning labels and might benefit from fine-tuning thresholds or incorporating additional modalities (like text) for better recall.</p>
+    
+    <h3>Fusion Model</h3>
+    <p>Our fusion model, which combines both textual overviews and poster images, demonstrated the best performance among all three approaches. On the test dataset, it achieved a <strong>Micro F1-score of 0.3114</strong> and a <strong>Macro F1-score of 0.2732</strong>. The improved Micro F1 indicates that the fusion model was more accurate in predicting genre labels overall, especially for frequently occurring genres. More importantly, the higher Macro F1 suggests that it performed better across both common and rare genres, handling class imbalance more effectively than either the text or image model alone. This confirms that merging complementary information from text and visuals provides a richer and more robust representation, leading to more reliable multi-label genre predictions.</p>
+    
+    <h3>Comparison</h3>
+    <div style="display: flex; justify-content: space-between; margin-top: 20px;">
+        <div style="width: 48%;">
+            <img src="f1_text.png" alt="F1 Scores for Text Model" style="width: 100%;">
+        </div>
+        <div style="width: 48%;">
+            <img src="f1_image.png" alt="F1 Scores for Image Model" style="width: 100%;">
+        </div>
+    </div>
+    
+    <div style="margin-top: 20px;">
+        <ul>
+            <li><strong>Text Model (Bidirectional LSTM with GloVe):</strong>
+                <ul>
+                    <li>Achieved strong results with a <strong>micro-F1 score of 0.51</strong>, <strong>macro-F1 of 0.37</strong>, and <strong>final test accuracy of 89.7%</strong>.</li>
+                    <li>Performed especially well on genres like <strong>Documentary (0.70 F1)</strong>, <strong>Music (0.67)</strong>, and <strong>Drama (0.56)</strong>, which often have rich descriptions in the movie overviews.</li>
+                    <li>The overview-based approach helped the model understand nuanced genre combinations, making it highly effective for <strong>multi-label predictions</strong>.</li>
+                    <li>Text data provided <strong>more reliable and detailed information</strong> about the movie's content, leading to better genre identification.</li>
+                </ul>
+            </li>
+            <li> <strong>Image Model (ResNet18 with Augmentations):</strong>
+                <ul>
+                    <li>Significantly lower performance with a <strong>micro-F1 score of 0.18</strong> and <strong>macro-F1 of 0.12</strong>.</li>
+                    <li>Struggled with abstract genres such as <strong>Mystery</strong>, <strong>Fantasy</strong>, and <strong>Western</strong>, where visual cues from posters are often subtle or missing.</li>
+                    <li>Showed some strength in visually distinguishable genres like <strong>Animation</strong> and <strong>Music</strong>, but not enough to match the text model.</li>
+                    <li>The reliance on poster imagery alone led to weaker generalization, especially when genre traits weren't visually obvious.</li>
+                </ul>
+            </li>
+        </ul>
+    </div>
+    
+    <h3>Error Analysis</h3>
+    <p>While both the text and image models performed reasonably well overall, we did notice a few recurring issues and misclassifications:</p>
+    <ul>
+        <li><strong>Unbalanced Genre Representation</strong>: Some genres like <em>TV Movie</em>, <em>Western</em>, and <em>Mystery</em> were severely underrepresented in the dataset. As a result, both models struggled to predict these genres correctly. Their F1-scores were extremely low or even zero in some cases.</li>
+        <li><strong>Image Model Struggles with Subtlety</strong>: The image-based model worked best when the genre had strong visual cues — like <em>Animation</em> or <em>Horror</em>. But for genres where posters were vague or artistic (like <em>Mystery</em> or <em>Romance</em>), the model often misclassified them or skipped them entirely.</li>
+        <li><strong>Text Model Overpredicts Popular Genres</strong>: The text model sometimes leaned too heavily toward common genres like <em>Drama</em> or <em>Comedy</em>. This was especially true when a movie overview used generic descriptions without clear genre indicators — for example, phrases like "a gripping tale of..." or "a heartfelt journey" caused the model to guess based on the tone rather than content.</li>
+        <li><strong>Multi-Genre Confusion</strong>: Movies that belong to more than one genre (like an <em>Action-Romance-Comedy</em>) posed a real challenge. Often, the model predicted just one or two of the genres correctly and missed the others. This partial correctness affected both precision and recall.</li>
+        <li><strong>Poster Quality and Missing Images</strong>: In some cases, the image model had to skip learning from low-resolution or unavailable posters. Also, some posters were just symbols or minimalistic, offering no real clues to the genre, which made it harder for the model to learn useful features.</li>
+    </ul>
+</main>

@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Simple Page</title>
+    <style>
+        mark {
+            background-color: yellow;
+        }
+    </style>
+</head>
+<body>
+    <h1>Reproducibility & Instructions</h1>
+    <br>
+    <p>Code Access: <a href="https://github.com/BVSSUMANTH/Mutilmodel_gener_classification">https://github.com/BVSSUMANTH/Mutilmodel_gener_classification</a></p>
+    
+    <h2>Setup Guide:</h2>
+    <ol>
+        <li>It is recommended to create a virtual environment first, use the command <mark>"python -m venv name_of_env"</mark> and then activate the environment with the command <mark>"name_of_env\Scripts\activate"</mark></li>
+        <br>
+        <li>Install necessary packages: <mark>"!pip install requests pandas torch torchvision transformers"</mark> or you can run the first cell of EDA file to install these.</li>
+        <br>
+        <li>Make sure you have downloaded <mark>glove.6B.zip</mark> and extracted the files into the directory you are working. This is step is essential for the text model.</li>
+    </ol>
+    
+    <h2>Data Downloading:</h2>
+    <ol>
+        <li>After following all the setup guide steps simply open the <mark>EDA.ipynb</mark> file and start running the cells one by one.</li>
+        <br>
+        <li>After running the cell with <mark>"def fetch_movies_for_year(api_key, year):"</mark> function, the data will automatically save in a CSV file in the working directory.
+            <br>
+        <br><strong><mark>Note: make sure you place your TMDB api key before running the code.</mark></strong></li>
+    </ol>
+    
+    <h2>Run Commands or Notebook Usage:</h2>
+    <ol>
+        <li>Once you have downloaded the data you are all set for the next steps</li>
+        <br>
+        <li>First run the <mark>EDA</mark> file completely and then you can run the text model or image model and fusion model</li>
+        <br>
+        <li>In the text model you will find <mark>"glove_path"</mark>, initially it is set to use <mark>"glove.6b.100d.txt"</mark> but the zip file has four different types of glove embeddings. If you would like change the type of embedding used you change the path of the file.</li>
+    </ol>
+</body>
+</html>

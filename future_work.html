@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Discussion & Future Work</title>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            line-height: 1.6;
+            margin: 0;
+            padding: 20px;
+            color: #333;
+            max-width: 800px;
+            margin: 0 auto;
+        }
+        h1 {
+            color: #2c3e50;
+            text-align: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #3498db;
+            padding-bottom: 10px;
+        }
+        h2 {
+            color: #2980b9;
+            margin-top: 30px;
+        }
+        .emoji {
+            font-size: 1.5em;
+            margin-right: 10px;
+            vertical-align: middle;
+        }
+        ul {
+            padding-left: 20px;
+        }
+        li {
+            margin-bottom: 15px;
+        }
+        .section {
+            background-color: #f9f9f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+        }
+        strong {
+            color: #16a085;
+        }
+    </style>
+</head>
+<body>
+    <h1>Discussion & Future Work</h1>
+    
+    <div class="section">
+        <h2><span class="emoji"></span> Lessons Learned</h2>
+        <br>
+        <ul>
+            <li><strong>Multi-modal data is powerful but complex</strong>: Combining text and image inputs led to improved genre classification, but it also introduced new challenges, such as synchronizing feature dimensions and training stability.</li>
+            <li><strong>Text models were surprisingly strong</strong>: The text-only model performed better than expected, likely due to rich descriptive information in movie overviews. It proved that textual content alone can capture a significant portion of genre-related context.</li>
+            <li><strong>Image models were more sensitive to noise</strong>: Visual features from posters were helpful, but the performance depended heavily on image quality, poster design style, and label balance.</li>
+            <li><strong>Model interpretability is tricky in multi-label settings</strong>: It was harder to understand why models picked certain genres, especially when genres overlap (e.g., Drama vs. Romance), making error analysis more nuanced.</li>
+        </ul>
+    </div>
+    
+    <div class="section">
+        <h2><span class="emoji"></span> Potential Improvements</h2>
+        <br>
+        <ul>
+            <li><strong>Fusion model architecture</strong>: Try more advanced fusion techniques, like attention-based or transformer-based fusion instead of just concatenation of text and image features.</li>
+            <li><strong>Add temporal context</strong>: Incorporating metadata like movie release year could improve genre prediction, especially for period-specific genres.</li>
+            <li><strong>Use transformer-based text encoders</strong>: Replacing LSTM with models like BERT or RoBERTa could improve textual understanding, especially with longer or nuanced movie descriptions.</li>
+            <li><strong>Pretrained vision models</strong>: Fine-tuning a stronger model like ViT (Vision Transformer) or EfficientNet may outperform ResNet18 on poster features.</li>
+            <li><strong>Data augmentation and balancing</strong>: Use smarter augmentation or synthetic data generation to enhance underrepresented genres (e.g., using GANs for poster generation or paraphrasing for overviews).</li>
+            <li><strong>Explainability and visualization tools</strong>: Integrate tools like Grad-CAM (for images) and attention heatmaps (for text) to better understand what the model is focusing on during prediction.</li>
+        </ul>
+    </div>
+</body>
+</html>

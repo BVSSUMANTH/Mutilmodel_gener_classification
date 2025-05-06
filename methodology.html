@@ -1,0 +1,380 @@
+<main>
+  <h1>Methodology</h1>
+  <br>
+  <style>
+    /* Style fix to ensure all code elements appear white */
+    code {
+      color: white !important; 
+    }
+    /* Ensure any other potentially pink elements are white */
+    em, strong, li, a, th, td {
+      color: white !important;
+    }
+    /* Table styling */
+    table {
+      border-collapse: collapse;
+      width: 80%;
+      margin: 20px auto;
+      color: white;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    th, td {
+      padding: 8px;
+      text-align: left;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+    }
+    th {
+      background-color: rgba(255, 255, 255, 0.1);
+      padding: 10px;
+    }
+    tr:nth-child(even) {
+      background-color: rgba(255, 255, 255, 0.05);
+    }
+  </style>
+  <h3>Text Modelling</h3>
+  
+  <ul>
+    <li><strong>Overview Selection:</strong>
+      <ul>
+        <li>We used the <em>overview</em> field from the dataset, which contains short descriptions of each movie.</li>
+        <li>This was the main input for our text-based model.</li>
+      </ul>
+    </li>
+    <li><strong>Tokenization:</strong>
+      <ul>
+        <li>All overviews were first converted to lowercase to ensure consistency.</li>
+        <li>We then used regular expressions to split each overview into individual words (tokens).</li>
+        <li>This step helped in cleaning the data and standardizing how text is represented.</li>
+      </ul>
+    </li>
+    <li><strong>Building a Vocabulary:</strong>
+      <ul>
+        <li>A vocabulary was created from all the unique words in the training set.</li>
+        <li>Each word was assigned a unique integer index to prepare it for embedding.</li>
+      </ul>
+    </li>
+    <li><strong>GloVe Embeddings:</strong>
+      <ul>
+        <li>We used <strong>GloVe 100-dimensional pretrained embeddings</strong> to give each word a meaningful vector representation.</li>
+        <li>These embeddings were trained on a large corpus and capture relationships between words.</li>
+        <li>If a word in our dataset was found in the GloVe file, we used its corresponding vector.</li>
+        <li>If a word wasn't available in GloVe, we assigned it the average of all GloVe vectors as a fallback.</li>
+      </ul>
+    </li>
+    <li><strong>Sequence Encoding and Padding:</strong>
+      <ul>
+        <li>Each overview was converted into a sequence of word indices (based on our vocabulary).</li>
+        <li>Since overviews vary in length, we <strong>padded</strong> all sequences to a fixed length of 128 tokens.</li>
+        <li>Padding ensures that the model receives consistent input shapes for training and inference.</li>
+      </ul>
+    </li>
+    <li><strong>Genre Encoding (Multi-Label):</strong>
+      <ul>
+        <li>Genre labels were converted using <strong>one-hot encoding</strong>, where each genre corresponds to a position in a binary vector.</li>
+        <li>For example, if a movie belongs to "Drama" and "Comedy", those two positions are marked as 1 in the vector.</li>
+        <li>This allows the model to learn multiple genres per movie (multi-label classification).</li>
+      </ul>
+    </li>
+    <li><strong>Final Dataset Structure:</strong>
+      <ul>
+        <li>Each training sample is a pair of:
+          <ul>
+            <li>A padded sequence of word indices (the encoded overview).</li>
+            <li>A one-hot vector representing all applicable genres for that movie.</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><strong>Model Input:</strong>
+      <ul>
+        <li>The processed text and labels were fed into a <strong>bidirectional LSTM model</strong>.</li>
+        <li>The model uses GloVe embeddings as the initial layer, allowing it to understand the meaning of words and their context in the overview.</li>
+        <li>It learns to predict the correct genres based on the sequence of words in each movie overview.</li>
+      </ul>
+    </li>
+  </ul>
+  
+  <h4>Hyperparameters</h4>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>Hyperparameter</th>
+        <th>Value / Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><code>EMBED_DIM</code></td>
+        <td>100 (GloVe embedding dimension)</td>
+      </tr>
+      <tr>
+        <td><code>HIDDEN_DIM</code></td>
+        <td>128 (LSTM hidden layer size)</td>
+      </tr>
+      <tr>
+        <td><code>MAX_LEN</code></td>
+        <td>128 (Maximum tokens per overview)</td>
+      </tr>
+      <tr>
+        <td><code>BATCH_SIZE</code></td>
+        <td>128</td>
+      </tr>
+      <tr>
+        <td><code>EPOCHS</code></td>
+        <td>50</td>
+      </tr>
+      <tr>
+        <td><code>LR</code> (Learning Rate)</td>
+        <td>0.001</td>
+      </tr>
+      <tr>
+        <td><code>PATIENCE</code></td>
+        <td>5 (Early stopping patience)</td>
+      </tr>
+      <tr>
+        <td><code>WEIGHT_DECAY</code></td>
+        <td>1e-4 (L2 regularization for optimizer)</td>
+      </tr>
+      <tr>
+        <td><code>VOCAB_SIZE</code></td>
+        <td>Based on training set vocabulary</td>
+      </tr>
+      <tr>
+        <td><code>DROPOUT (Embedding)</code></td>
+        <td>0.2</td>
+      </tr>
+      <tr>
+        <td><code>DROPOUT (LSTM)</code></td>
+        <td>0.3 (applied to LSTM layer)</td>
+      </tr>
+      <tr>
+        <td><code>DROPOUT (FC layer)</code></td>
+        <td>0.5</td>
+      </tr>
+      <tr>
+        <td><code>LSTM</code> Direction</td>
+        <td>Bidirectional</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <div class="figure-container" style="display: flex; flex-direction: column; align-items: center; margin-top: 40px;">
+    <img src="text_flow.png" alt="Text Processing Workflow" style="width: 25%; max-width: 800px; height: auto; border-radius: 8px; box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);">
+    <div class="figure-caption" style="font-size: 0.9rem; color: #ffffff; margin-top: 10px; text-align: center;">Figure: Text processing workflow for movie overview classification</div>
+  </div>
+
+  <br><br>
+  <h3>Image Modelling</h3>
+
+  <ul>
+    <li><strong>Poster Selection:</strong>
+      <ul>
+        <li>We used movie posters as the visual input for our image-based genre classification model.</li>
+        <li>Only movies with successfully downloaded poster images were included in the dataset.</li>
+      </ul>
+    </li>
+    <li><strong>Image Augmentation (Training Only):</strong>
+      <ul>
+        <li><strong>RandomResizedCrop (192×192):</strong> Randomly crops and resizes parts of the image to help the model generalize better.</li>
+        <li><strong>RandomHorizontalFlip:</strong> Flips the image horizontally with a 50% chance to simulate visual variety.</li>
+        <li><strong>ColorJitter:</strong> Randomly changes brightness, contrast, and saturation to mimic lighting differences.</li>
+        <li><strong>RandomErasing:</strong> Randomly erases a portion of the image to make the model robust to occlusions or missing parts.</li>
+        <li><strong>ToTensor & Normalize:</strong> Converts the image to tensor format and normalizes using ImageNet's mean and standard deviation.</li>
+      </ul>
+    </li>
+    <li><strong>Preprocessing for Validation & Testing:</strong>
+      <ul>
+        <li>Images are resized to <strong>192×192</strong> pixels for consistency.</li>
+        <li>Only <strong>ToTensor</strong> and <strong>Normalize</strong> transforms are applied (no augmentation).</li>
+      </ul>
+    </li>
+    <li><strong>Dataset Class (PosterDataset):</strong>
+      <ul>
+        <li>A custom PyTorch dataset class loads images based on metadata from <code>balanced_train.csv</code>.</li>
+        <li>It filters out movies with missing poster files to ensure only valid samples are used.</li>
+        <li>Each image is paired with its corresponding one-hot encoded genre vector.</li>
+      </ul>
+    </li>
+    <li><strong>CNN Architecture:</strong>
+      <ul>
+        <li>We used a <strong>ResNet-18</strong> model pre-trained on ImageNet as our base network.</li>
+        <li>To save training time and leverage learned features, we <strong>froze the early layers</strong> and only trained <code>layer3</code>, <code>layer4</code>, and the final classification head.</li>
+      </ul>
+    </li>
+    <li><strong>Custom Classification Head:</strong>
+      <ul>
+        <li>The final layer of ResNet-18 was replaced with:
+          <ul>
+            <li>A <strong>Linear → ReLU → Dropout → Linear</strong> sequence.</li>
+            <li>This maps high-level features to a multi-label output matching the number of genre classes.</li>
+          </ul>
+        </li>
+      </ul>
+    </li>
+    <li><strong>Genre Labels (Multi-Label Output):</strong>
+      <ul>
+        <li>Like the text model, genres were one-hot encoded.</li>
+        <li>The model outputs a probability for each genre using <strong>BCEWithLogitsLoss</strong>, suitable for multi-label classification.</li>
+      </ul>
+    </li>
+    <li><strong>Training Optimizations:</strong>
+      <ul>
+        <li><strong>Mixup Augmentation:</strong> Blends images and their labels during training to improve generalization.</li>
+        <li><strong>OneCycleLR Scheduler:</strong> Dynamically adjusts the learning rate throughout training.</li>
+        <li><strong>Mixed Precision (autocast + GradScaler):</strong> Speeds up training and reduces memory usage.</li>
+        <li><strong>Adam Optimizer:</strong> Used with weight decay for regularization.</li>
+        <li><strong>Early Stopping:</strong> Stops training when validation loss stops improving (patience = 2 epochs).</li>
+      </ul>
+    </li>
+    <li><strong>Final Output:</strong>
+      <ul>
+        <li>The model predicts the probability of each genre for a given poster.</li>
+        <li>Best-performing model is saved as <code>best.pth</code> based on lowest validation loss.</li>
+      </ul>
+    </li>
+  </ul>
+  
+  <h4>Hyperparameters</h4>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>Hyperparameter</th>
+        <th>Value / Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Batch Size</strong></td>
+        <td>64</td>
+      </tr>
+      <tr>
+        <td><strong>Epochs</strong></td>
+        <td>10</td>
+      </tr>
+      <tr>
+        <td><strong>Loss Function</strong></td>
+        <td><code>BCEWithLogitsLoss()</code> (multi-label)</td>
+      </tr>
+      <tr>
+        <td><strong>Optimizer</strong></td>
+        <td>Adam (only trainable parameters)</td>
+      </tr>
+      <tr>
+        <td><strong>Learning Rate</strong></td>
+        <td><code>1e-3</code></td>
+      </tr>
+      <tr>
+        <td><strong>Scheduler</strong></td>
+        <td><code>OneCycleLR</code></td>
+      </tr>
+      <tr>
+        <td><strong>Scheduler pct_start</strong></td>
+        <td>0.3</td>
+      </tr>
+      <tr>
+        <td><strong>Scheduler div_factor</strong></td>
+        <td>25.0</td>
+      </tr>
+      <tr>
+        <td><strong>Scheduler strategy</strong></td>
+        <td>Cosine annealing</td>
+      </tr>
+      <tr>
+        <td><strong>Mixup (Data Aug)</strong></td>
+        <td><code>alpha=0.2</code> (used during training)</td>
+      </tr>
+      <tr>
+        <td><strong>Gradient Scaler</strong></td>
+        <td><code>torch.cuda.amp.GradScaler()</code> (for mixed precision)</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <div class="figure-container" style="display: flex; flex-direction: column; align-items: center; margin-top: 40px;">
+    <img src="image_flow.png" alt="Image Processing Workflow" style="width: 25%; max-width: 800px; height: auto; border-radius: 8px; box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);">
+    <div class="figure-caption" style="font-size: 0.9rem; color: #ffffff; margin-top: 10px; text-align: center;">Figure: Image processing workflow for movie poster classification</div>
+  </div>
+  
+  <br><br>
+  <h3>Fusion Modeling (Combining Text & Image)</h3>
+  
+  <ul>
+    <li><strong>Text Branch (LSTM-Based):</strong>
+      <ul>
+        <li>The plot overview is tokenized and embedded using pretrained GloVe vectors.</li>
+        <li>A bidirectional LSTM reads the sequence and captures both forward and backward context.</li>
+        <li>The result is a condensed representation of the text, summarizing the narrative into a single 128-dimensional vector.</li>
+      </ul>
+    </li>
+    <li><strong>Image Branch (ResNet-Based):</strong>
+      <ul>
+        <li>Each movie poster is passed through a ResNet18 convolutional neural network.</li>
+        <li>Most of the network is frozen, allowing only the final layers to be fine-tuned on our data.</li>
+        <li>This produces a 128-dimensional feature vector that captures visual style, mood, and genre-relevant cues from the poster.</li>
+      </ul>
+    </li>
+    <li><strong>Fusion Strategy:</strong>
+      <ul>
+        <li>The outputs of the text and image branches are combined using a <strong>late fusion approach</strong>.</li>
+        <li>Both vectors are concatenated into a single feature that contains both narrative and visual information.</li>
+        <li>This approach allows each modality to learn independently and avoids the complexity of interaction-heavy methods like attention or cross-modal transformers.</li>
+      </ul>
+    </li>
+    <li><strong>Final Classification:</strong>
+      <ul>
+        <li>The combined feature vector is passed through a simple neural network to produce the final genre predictions.</li>
+        <li>Since movies can have multiple genres, the model is trained as a multi-label classifier using a sigmoid activation and binary loss.</li>
+        <li>Dropout is used in the final layers to prevent overfitting and improve generalization.</li>
+      </ul>
+    </li>
+    <li><strong>Why Late Fusion?</strong>
+      <ul>
+        <li>Late fusion is simple and effective, allowing each branch to specialize in its own type of data.</li>
+        <li>It reduces computational cost compared to mid or early fusion techniques.</li>
+        <li>It also makes the model more robust—if one modality has missing or noisy data, the other can still contribute meaningfully.</li>
+      </ul>
+    </li>
+    <li><strong>Potential Future Improvements:</strong>
+      <ul>
+        <li>In future versions, a lightweight cross-attention mechanism could be added to allow the model to dynamically focus more on the poster or the overview depending on the context.</li>
+        <li>This would help the model weigh both modalities based on their importance for each movie.</li>
+      </ul>
+    </li>
+  </ul>
+  
+  <h4>Hyperparameters</h4>
+  
+  <table>
+    <thead>
+      <tr>
+        <th>Hyperparameter</th>
+        <th>Value / Description</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>Learning Rate</strong></td>
+        <td>1e-3</td>
+      </tr>
+      <tr>
+        <td><strong>Weight Decay</strong></td>
+        <td>1e-4</td>
+      </tr>
+      <tr>
+        <td><strong>Batch Size</strong></td>
+        <td>128</td>
+      </tr>
+      <tr>
+        <td><strong>Epochs</strong></td>
+        <td>20</td>
+      </tr>
+    </tbody>
+  </table>
+  
+  <div class="figure-container" style="display: flex; flex-direction: column; align-items: center; margin-top: 40px; margin-bottom: 40px;">
+    <img src="fusion_flow.png" alt="Fusion Model Workflow" style="width: 25%; max-width: 800px; height: auto; border-radius: 8px; box-shadow: 0 0 8px rgba(0, 0, 0, 0.4);">
+    <div class="figure-caption" style="font-size: 0.9rem; color: #ffffff; margin-top: 10px; text-align: center;">Figure: Multi-modal fusion approach combining text and image features for genre prediction</div>
+  </div>
+</main>
